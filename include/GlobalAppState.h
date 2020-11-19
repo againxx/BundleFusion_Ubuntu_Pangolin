@@ -18,8 +18,12 @@
 
 #define X_GLOBAL_APP_STATE_FIELDS \
 	X(uint, s_sensorIdx) \
+	X(std::string, s_datasetType) \
+	X(std::string, s_datasetPath) \
 	X(uint, s_windowWidth) \
 	X(uint, s_windowHeight) \
+	X(uint, s_rawDepthWidth) \
+	X(uint, s_rawDepthHeight) \
 	X(uint, s_integrationWidth) \
 	X(uint, s_integrationHeight) \
 	X(uint, s_rayCastWidth) \

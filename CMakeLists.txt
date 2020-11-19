@@ -17,6 +17,7 @@ ADD_DEFINITIONS(-fpermissive)
 find_package (Threads)
 find_package (Eigen3 REQUIRED)
 find_package (OpenCV REQUIRED)
+FIND_PACKAGE(Freenect2 REQUIRED)
 
 file(GLOB_RECURSE cpp_file src/*.cpp)
 file(GLOB_RECURSE cu_file src/*.cu)
@@ -84,9 +85,22 @@ endif()
 #     FILE gputsdfrecon-config.cmake
 #     DESTINATION lib/cmake/gputsdfrecon)
 
-add_executable(bundle_fusion_example example/bundle_fusion_example.cpp)
-target_link_libraries(bundle_fusion_example 
+FILE(GLOB SRC
+    "example/*.cpp"
+)
+
+FILE(GLOB HEADER
+    "example/*.h"
+)
+
+ADD_EXECUTABLE(bundle_fusion_kinect
+    ${SRC}
+    ${HEADER}
+)
+
+target_link_libraries(bundle_fusion_kinect 
    BundleFusion
+   ${FREENECT2_LIBRARY}
 )
 # 
 # include_directories(

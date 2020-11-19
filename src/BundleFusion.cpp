@@ -1,5 +1,5 @@
 #include <BundleFusion.h>
-#include <PrimeSenseSensor.h>
+#include <GenericSensor.h>
 #include <GlobalBundlingState.h>
 #include <TimingLog.h>
 
@@ -116,7 +116,11 @@ bool initBundleFusion ( std::string app_config, std::string bundle_config )
         dualGPU.setDevice ( DualGPU::DEVICE_RECONSTRUCTION );	//main gpu
         ConditionManager::init();
 
+        std::cout << "1" << std::endl;
+
         g_RGBDSensor = getRGBDSensor();
+
+        std::cout << "2" << std::endl;
 
         //init the input RGBD sensor
         if ( g_RGBDSensor == NULL )
@@ -478,11 +482,12 @@ RGBDSensor* getRGBDSensor()
     static RGBDSensor* g_sensor = NULL;
     if ( g_sensor != NULL )	return g_sensor;
 
-    if ( GlobalAppState::get().s_sensorIdx == 1 )
+    // For now, just return the GenericSensor implementation of RGBDSensor
+    // However, the code has only been tested for IDX = 2 (Kinect V2); weird behavior
+    //   may occur when using another number
+    if ( GlobalAppState::get().s_sensorIdx >= 0 )
     {
-        //static PrimeSenseSensor s_primeSense;
-        //return &s_primeSense;
-        g_sensor = new PrimeSenseSensor;
+        g_sensor = new GenericSensor;
         return g_sensor;
     }
     throw MLIB_EXCEPTION ( "unkown sensor id " + std::to_string ( GlobalAppState::get().s_sensorIdx ) );
