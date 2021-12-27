@@ -1,5 +1,5 @@
 // 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense; 7=StructureSensor; 8=SensorDataReader (for offline processing)
-s_sensorIdx = 2;
+s_sensorIdx = 0;
 
 // [aldcheng] Additional string to specify dataset type and path if idx = 8
 s_datasetType = ""
@@ -121,9 +121,13 @@ s_recordDataWidth = 512;		//only applies to the non compressed version (see RGBD
 s_recordDataHeight = 424;		//only applies to the non compressed version (see RGBDSensor.cpp)
 s_recordDataFile = "dump/recording.sens";
 s_reconstructionEnabled = true;
-s_cameraIntrinsicFx = 366.1;
-s_cameraIntrinsicFy = 366.1;
-s_cameraIntrinsicCx = 255.5;
-s_cameraIntrinsicCy = 211.5;
+//s_cameraIntrinsicFx = 366.1;
+//s_cameraIntrinsicFy = 366.1;
+//s_cameraIntrinsicCx = 255.5;
+//s_cameraIntrinsicCy = 211.5;
+s_cameraIntrinsicFx = 584.5826;
+s_cameraIntrinsicFy = 583.2528;
+s_cameraIntrinsicCx = 322.2068;
+s_cameraIntrinsicCy = 248.1163;
 s_generateMeshDir = "./"
 
