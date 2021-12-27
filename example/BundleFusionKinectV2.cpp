@@ -21,6 +21,7 @@
 
 // LibFreenect2 Interface
 #include "imageStream.h"
+#include "image_stream_kinectv1.h"
 
 int main ( int argc, char** argv )
 {
@@ -43,17 +44,25 @@ int main ( int argc, char** argv )
         return -1;
     }
 
-    ImageStream streamer;
+    // ImageStream streamer;
+    Freenect::Freenect freenect;
+    ImageStreamKinectV1& streamer = freenect.createDevice<ImageStreamKinectV1>(0);
+
+    streamer.startVideo();
+    streamer.startDepth();
+
+    cv::Mat rgb, depth;
 
     // Main loop using live data
     while(true) {
-        if(!streamer.GetNext()) {
-            break;
+        if (!streamer.new_depth_frame_ || !streamer.new_rgb_frame_) {
+            std::cout << "Run out of frames" << '\n';
+            continue;
         } else {
-            cv::imshow("RGB", streamer.rgb);
-            cv::imshow("Depth", streamer.depth);
+            cv::imshow("RGB", streamer.getVideo(rgb));
+            cv::imshow("Depth", streamer.getDepth(depth));
 
-            if ( processInputRGBDFrame ( streamer.rgb, streamer.depth ) )
+            if ( processInputRGBDFrame ( rgb, depth ) )
             {
                 std::cout<<"\tSuccess! frame added into BundleFusion." << std::endl;
             }

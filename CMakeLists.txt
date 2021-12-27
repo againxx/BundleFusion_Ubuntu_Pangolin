@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(BundleFusion)
 
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive -pthread -lrt -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -pthread -lrt -fPIC")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 option(VISUALIZATION "Build BundleFusion With Pangolin" ON)
@@ -11,13 +11,17 @@ find_package(CUDA REQUIRED)
 set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 set(CUDA_SEPARABLE_COMPILATION ON)
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-set(CUDA_NVCC_FLAGS -arch=sm_35;-std=c++11;-lm)
-ADD_DEFINITIONS(-fpermissive)
+set(CUDA_NVCC_FLAGS -arch=sm_35;-lm)
+add_definitions(-fpermissive)
 
-find_package (Threads)
-find_package (Eigen3 REQUIRED)
-find_package (OpenCV REQUIRED)
-FIND_PACKAGE(Freenect2 REQUIRED)
+find_package(Threads)
+find_package(Eigen3 REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Freenect2 REQUIRED)
+find_package(PkgConfig)
+pkg_search_module(FREENECT REQUIRED libfreenect)
+message(STATUS "${FREENECT_LIBRARIES}")
+message(STATUS "${FREENECT_INCLUDE_DIRS}")
 
 file(GLOB_RECURSE cpp_file src/*.cpp)
 file(GLOB_RECURSE cu_file src/*.cu)
@@ -43,10 +47,13 @@ else()
   list(REMOVE_ITEM cu_file ${Visualization_CU_Files}) 
 endif()
 
+message(STATUS "CUDA_INCLUDE_DIRS: ${CUDA_INCLUDE_DIRS}")
+
 include_directories(
   ${CUDA_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
+  ${FREENECT_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include/
   ${PROJECT_SOURCE_DIR}/include/mLib/include
   ${PROJECT_SOURCE_DIR}/include/mLibExternal
@@ -59,23 +66,22 @@ include_directories(
 )
 
 
-cuda_add_library(BundleFusion  SHARED
-  ${cu_file} 
+cuda_add_library(BundleFusion SHARED
+  ${cu_file}
   ${cpp_file}
 )
 
-target_link_libraries(BundleFusion 
-  cuda 
+target_link_libraries(BundleFusion
+  cuda
   freeimage
   ${CUDA_LIBRARIES}
   ${OpenCV_LIBS}
-
 )
 
 if(Pangolin_FOUND)
   target_link_libraries(BundleFusion
     ${Pangolin_LIBRARIES}
-    boost_system 
+    boost_system
     boost_thread
   )
 endif()
@@ -85,22 +91,23 @@ endif()
 #     FILE gputsdfrecon-config.cmake
 #     DESTINATION lib/cmake/gputsdfrecon)
 
-FILE(GLOB SRC
+file(GLOB SRC
     "example/*.cpp"
 )
 
-FILE(GLOB HEADER
+file(GLOB HEADER
     "example/*.h"
 )
 
-ADD_EXECUTABLE(bundle_fusion_kinect
+add_executable(bundle_fusion_kinect
     ${SRC}
     ${HEADER}
 )
 
-target_link_libraries(bundle_fusion_kinect 
+target_link_libraries(bundle_fusion_kinect
    BundleFusion
    ${FREENECT2_LIBRARY}
+   ${FREENECT_LIBRARIES}
 )
 # 
 # include_directories(

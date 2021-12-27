@@ -43,7 +43,6 @@ ImageStream::ImageStream()
     // If we want live stream data from Kinect V2
     } else if (type == "Kinect2") {
         InitKinect2();
-
     // Invalid arg passed; throw error
     } else {
         throw std::invalid_argument("invalid input type");
